@@ -60,11 +60,15 @@ La virtualización por hardware debe encontrarse habilitada en BIOS/UEFI para po
 
 ## 3. Arranque desde la ISO
 
-La imagen ISO fue configurada como medio de arranque de la máquina virtual.
+La imagen ISO de Debian fue seleccionada previamente en la configuración de la máquina virtual como medio de arranque.
 
-Al iniciar la VM, Debian cargó automáticamente el instalador.
+Al iniciar la VM, VirtualBox arrancó desde la ISO y mostró el menú de instalación de Debian.
 
-Para este laboratorio se utilizó la instalación en modo texto.
+Para este laboratorio se seleccionó manualmente la opción:
+
+`Install`
+
+en lugar de `Graphical install`, para realizar la instalación mediante la interfaz de texto del instalador.
 
 ---
 
