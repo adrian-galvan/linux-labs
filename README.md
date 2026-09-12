@@ -1,5 +1,6 @@
 # linux-labs
 Laboratorios prácticos de administración GNU/Linux sobre Debian: sistema, permisos, procesos, servicios, almacenamiento, SSH y troubleshooting.
+
 🐧 Linux Labs
 
 Laboratorios prácticos de administración GNU/Linux realizados sobre Debian GNU/Linux en VirtualBox, principalmente mediante TTY y shell sin interfaz gráfica.
