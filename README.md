@@ -30,7 +30,7 @@ Navegación por el sistema de archivos, archivos y directorios, rutas absolutas 
 
 02 — Users, Groups & Permissions
 
-Usuarios y grupos, ownership, permisos clásicos, SGID, ACL, herencia de permisos y diagnóstico de errores Permission denied.
+Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de Permission denied.
 
 03 — Processes, systemd & Logs
 
