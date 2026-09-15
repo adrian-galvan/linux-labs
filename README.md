@@ -23,9 +23,10 @@ evidencia observada;
 cambios realizados;
 verificación del resultado;
 errores encontrados y resolución.
-🧪 Laboratorios
-01 — Filesystem & Shell
 
+### 01 — Debian GNU/Linux Installation on VirtualBox
+
+Instalación de Debian GNU/Linux 13 mediante netinst sobre VirtualBox, configuración de la máquina virtual, particionado con LVM e instalación mínima sin entorno gráfico orientada al trabajo mediante TTY y shell.
 Navegación por el sistema de archivos, archivos y directorios, rutas absolutas y relativas, herramientas GNU/Linux y uso de shell.
 
 02 — Users, Groups & Permissions
