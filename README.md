@@ -29,7 +29,7 @@ errores encontrados y resolución.
 Instalación de Debian GNU/Linux 13 mediante netinst sobre VirtualBox, configuración de la máquina virtual, particionado con LVM e instalación mínima sin entorno gráfico orientada al trabajo mediante TTY y shell.
 Navegación por el sistema de archivos, archivos y directorios, rutas absolutas y relativas, herramientas GNU/Linux y uso de shell.
 
-02 — Users, Groups & Permissions
+### 02 — Users, Groups & Permissions
 
 Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de Permission denied.
 
