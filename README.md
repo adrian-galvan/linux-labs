@@ -72,4 +72,4 @@ Storage & Mounting · SSH & Troubleshooting · Pipes & Text Tools
 Adrián Galván
 Linux Administration Student · IT Support · Infrastructure
 
-LinkedIn
+[LinkedIn](http://linkedin.com/in/adrian-galv%C3%A1n)
