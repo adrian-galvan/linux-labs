@@ -1,8 +1,5 @@
-# Lab 02 — Usuarios, grupos, permisos, SGID, ACL y Sticky Bit
-
-## Objetivo
-
-Configurar un directorio compartido en Debian GNU/Linux utilizando usuarios, grupos, permisos clásicos, SGID, ACL y Sticky Bit.
+# Lab 02 — Users, Groups & Permissions
+Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de `Permission denied`.
 
 El laboratorio busca comprobar de forma práctica cómo distintos mecanismos de permisos pueden combinarse para:
 
