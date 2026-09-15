@@ -31,11 +31,11 @@ Navegación por el sistema de archivos, archivos y directorios, rutas absolutas 
 
 ### 02 — Users, Groups & Permissions
 
-Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de Permission denied.
+Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de `Permission denied`.
 
-03 — Processes, systemd & Logs
+### 03 — Processes, Signals & Services
 
-Procesos, señales, prioridades, servicios administrados mediante systemd y diagnóstico utilizando journalctl.
+Administración y monitoreo de procesos mediante `ps`, `pstree` y `top`, identificación de PID/PPID y estados, uso de SIGTERM y SIGKILL, y administración de `ssh.service` mediante `systemctl`.
 
 04 — Storage & Mounting
 
