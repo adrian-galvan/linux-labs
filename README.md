@@ -64,6 +64,9 @@ Actualmente curso el Diplomado Administrador de Redes Linux con orientación en 
 
 El repositorio se irá ampliando a medida que avance en administración Linux, redes, servicios, scripting y seguridad.
 
+### Próximamente
+Storage & Mounting · SSH & Troubleshooting · Pipes & Text Tools
+
 👤 Autor
 
 Adrián Galván
