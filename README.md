@@ -39,15 +39,15 @@ Administración y monitoreo de procesos mediante `ps`, `pstree` y `top`, identif
 
 04 — Storage & Mounting
 
-Dispositivos de bloque, particiones, sistemas de archivos, montaje, UUID y configuración mediante /etc/fstab.
+....
 
 05 — SSH & Troubleshooting
 
-Configuración y prueba de OpenSSH, conexiones locales, análisis del servicio sshd, logs y diagnóstico de problemas.
+....
 
 06 — Pipes & Text Tools
 
-Pipes, redirecciones y procesamiento de texto mediante herramientas como grep, cut, sort y otras utilidades GNU/Linux.
+....
 
 🛠️ Entorno
 Debian GNU/Linux
