@@ -1,4 +1,6 @@
-# Lab 04 — APT, Repositories & Package Trust 
+# Lab 04 — APT, Repositories & Package Trust
+
+[← Índice de laboratorios](../README.md) · [Perfil de Adrián Galván](https://github.com/adrian-galvan)
 
 ## Objetivo
 
@@ -17,6 +19,8 @@ Comprender y documentar el funcionamiento de los repositorios APT en Debian 13, 
 El laboratorio parte de la configuración real del sistema, provoca intencionalmente un fallo de verificación al agregar un repositorio externo sin una clave pública asociada y posteriormente corrige la configuración mediante una clave específica y `Signed-By`.
 
 Finalmente, el repositorio externo también es migrado desde el formato clásico `.list` al formato Deb822 `.sources`.
+
+El repositorio de Google Chrome se utiliza para estudiar la configuración y la confianza de APT. El laboratorio termina con la actualización de índices; no requiere instalar Chrome ni disponer de un entorno gráfico.
 
 ---
 
@@ -206,6 +210,8 @@ Durante la prueba inicial se utilizó la URL HTTP mostrada en la captura. En la 
 
 La fuente de Google fue agregada inicialmente sin `Signed-By`.
 
+En esa configuración APT recurre a sus claves de confianza global, donde no estaba disponible la clave necesaria de Google. La ausencia de `Signed-By` por sí sola no provoca un error de firma: el fallo aparece porque ninguna clave disponible permite verificar esos metadatos. [Referencia: sources.list(5)](https://manpages.debian.org/trixie/apt/sources.list.5.en.html).
+
 Se ejecutó:
 
 ```bash
@@ -308,6 +314,8 @@ Signed-By
 Guardar una clave dentro de `/etc/apt/keyrings/` por sí solo no hace que APT la utilice automáticamente para una fuente.
 
 La definición del repositorio debe referenciarla mediante `Signed-By`.
+
+En esta configuración, el archivo de clave debe ser legible por el usuario del sistema `_apt`, y los directorios de su ruta deben permitirle el acceso. `/usr/share/keyrings/` se utiliza habitualmente para claves administradas por paquetes; `/etc/apt/keyrings/`, para claves administradas localmente.
 
 ---
 
@@ -489,6 +497,8 @@ Esto todavía no instala Google Chrome.
 
 Solamente permite que APT verifique los metadatos del repositorio e incorpore su índice de paquetes.
 
+La cadena de verificación conecta la firma de `InRelease` (o de `Release` mediante `Release.gpg`) con los hashes de los índices y, a través de estos, con los hashes de los paquetes `.deb`. La comprobación documentada aquí llega hasta los índices; no incluye la descarga o instalación de Chrome. [Referencia: apt-secure(8)](https://manpages.debian.org/trixie/apt/apt-secure.8.en.html).
+
 ---
 
 ## 10. Migración final del repositorio de Google a Deb822
@@ -548,6 +558,8 @@ El resultado final fue:
 debian.sources
 google-chrome.sources
 ```
+
+La definición anterior de `google-chrome.list` ya no figura entre las fuentes activas. Al reproducir la migración hay que retirar o deshabilitar la entrada antigua para evitar definir dos veces el mismo repositorio.
 
 También se comprobó el contenido:
 

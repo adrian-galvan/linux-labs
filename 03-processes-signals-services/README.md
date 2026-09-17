@@ -1,5 +1,7 @@
 # Lab 03 — Processes, Signals & Services
 
+[← Índice de laboratorios](../README.md) · [Perfil de Adrián Galván](https://github.com/adrian-galvan)
+
 ## Objetivo
 
 Administrar y observar procesos y servicios en Debian GNU/Linux mediante herramientas de línea de comandos.
@@ -15,7 +17,7 @@ El laboratorio busca comprobar de forma práctica:
 - monitoreo dinámico mediante `top`;
 - administración de servicios mediante `systemctl`;
 - diferencia entre `start/stop` y `enable/disable`;
-- comportamiento de un servicio después de un reinicio.
+- configuración de inicio automático y su relación con el arranque del sistema.
 
 ---
 
@@ -122,6 +124,8 @@ El primer proceso fue finalizado utilizando:
 ```bash
 kill PID
 ```
+
+`PID` es un marcador: debe reemplazarse por el identificador del proceso `sleep` creado en esa sesión. Los números de PID de las capturas son ejemplos de la práctica y cambian entre ejecuciones.
 
 Al no especificar una señal explícitamente, `kill` utiliza normalmente SIGTERM.
 
@@ -230,7 +234,7 @@ El estado:
 S
 ```
 
-indicó que el proceso se encontraba en estado **Sleeping**.
+indicó que el proceso se encontraba en estado de **espera interrumpible (Sleeping)**.
 
 Además, el PPID era:
 
@@ -321,7 +325,7 @@ El bajo uso de CPU es coherente con el comportamiento del comando `sleep`, ya qu
 
 ---
 
-# Administración de servicios con systemd
+## Administración de servicios con systemd
 
 Hasta este punto se trabajó directamente con procesos.
 
@@ -483,7 +487,13 @@ porque `enable` no implica iniciar inmediatamente el servicio.
 
 Del mismo modo, `disable` no equivale por sí solo a detener un servicio que ya se encuentra ejecutándose.
 
+Además, una unidad deshabilitada todavía puede iniciarse manualmente o ser activada por otra unidad. [Referencia: systemctl(1)](https://manpages.debian.org/trixie/systemd/systemctl.1.en.html).
+
 ![Habilitación y deshabilitación de ssh.service](images/06-ssh-enable-disable.png)
+
+### Comprobación complementaria tras reiniciar la VM
+
+Las capturas de esta sección documentan los cambios de habilitación y el estado de `ssh.service` durante la sesión. La verificación después de reiniciar el sistema queda pendiente de documentar con evidencia propia; reiniciar el servicio con `systemctl restart ssh` es una operación distinta.
 
 ---
 

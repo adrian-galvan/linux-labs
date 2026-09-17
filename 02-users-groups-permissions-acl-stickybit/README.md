@@ -1,4 +1,7 @@
 # Lab 02 — Users, Groups & Permissions
+
+[← Índice de laboratorios](../README.md) · [Perfil de Adrián Galván](https://github.com/adrian-galvan)
+
 Administración de usuarios y grupos, ownership, permisos clásicos, SGID, ACL y Sticky Bit sobre un directorio compartido, con verificación de herencia de grupo y resolución de `Permission denied`.
 
 El laboratorio busca comprobar de forma práctica cómo distintos mecanismos de permisos pueden combinarse para:
@@ -8,7 +11,7 @@ El laboratorio busca comprobar de forma práctica cómo distintos mecanismos de 
 - mantener la herencia de grupo mediante SGID;
 - otorgar permisos específicos mediante ACL;
 - diagnosticar un caso de `Permission denied`;
-- impedir que un usuario elimine archivos pertenecientes a otro mediante Sticky Bit.
+- restringir el borrado de archivos ajenos mediante Sticky Bit.
 
 ---
 
@@ -96,6 +99,8 @@ groups tecnico2
 
 El resultado confirmó que ambos usuarios pertenecían a `grupotecnicos`.
 
+Si el usuario ya tenía una sesión abierta antes del cambio, debe iniciar una nueva sesión para que sus procesos incorporen el nuevo grupo suplementario.
+
 ![Verificación de pertenencia a grupotecnicos](images/03-group-membership.png)
 
 ---
@@ -142,13 +147,15 @@ El modo `2770` representa:
 
 SGID sobre un directorio permite que los nuevos archivos y subdirectorios creados dentro de él hereden el grupo propietario del directorio padre.
 
+Esta herencia corresponde al **grupo propietario**. Los permisos de los nuevos archivos dependen además del modo solicitado al crearlos, la `umask` y, si existe, una ACL predeterminada.
+
 En este caso:
 
 ```text
 grupotecnicos
 ```
 
-La configuración fue verificada mediante:
+La captura utiliza `ls -lf /srv/soporte` y muestra los permisos de la entrada `.`. Una comprobación directa del directorio es:
 
 ```bash
 ls -ld /srv/soporte
@@ -291,6 +298,10 @@ mask::rwx
 
 representa el máximo permiso efectivo disponible para usuarios nombrados mediante ACL y grupos.
 
+La máscara no limita al propietario del archivo ni a la entrada `other`. Cuando existe una máscara ACL, los bits de grupo mostrados por `ls -l` representan esa máscara. [Referencia: acl(5)](https://manpages.debian.org/trixie/acl/acl.5.en.html).
+
+En esta práctica se configuró una **ACL de acceso sobre el directorio**. No se configuró una ACL predeterminada (`default`), por lo que la entrada de `usuariosinpermiso` no se hereda automáticamente en los archivos nuevos. La herencia de grupo comprobada en el paso 6 corresponde a SGID.
+
 ![Instalación, configuración y verificación de ACL](images/07-acl-install-config-verification.png)
 
 ---
@@ -381,6 +392,8 @@ grupo       → rwx
 otros       → ---
 ```
 
+Como el directorio ya tiene una ACL extendida, el `7` de la clase de grupo corresponde a `mask::rwx`. En este caso, la entrada `group::rwx` también conserva esos permisos.
+
 ---
 
 ## 12. Verificación de Sticky Bit
@@ -399,7 +412,9 @@ El sistema respondió:
 Operación no permitida
 ```
 
-Esto confirmó que Sticky Bit impedía que un usuario eliminara un archivo perteneciente a otro usuario dentro del directorio compartido, aunque tuviera permisos de escritura sobre dicho directorio.
+Esto confirmó que Sticky Bit impedía el borrado en el caso probado: `usuariosinpermiso` no era propietario del archivo ni del directorio y no tenía privilegios administrativos.
+
+Sticky Bit restringe el borrado y el cambio de nombre de las entradas del directorio. El propietario del archivo, el propietario del directorio y un proceso con los privilegios correspondientes pueden superar esa restricción, sujetos a los demás controles de acceso. La modificación del contenido depende de los permisos del propio archivo. [Referencia: chmod(1)](https://manpages.debian.org/trixie/coreutils/chmod.1.en.html).
 
 ![Sticky Bit bloqueando el borrado de un archivo ajeno](images/10-sticky-denied.png)
 
@@ -495,6 +510,6 @@ SGID permitió mantener una pertenencia de grupo coherente para los archivos cre
 
 ACL permitió otorgar acceso específico a un usuario externo sin modificar su pertenencia al grupo.
 
-Finalmente, Sticky Bit agregó una protección adicional evitando que un usuario eliminara archivos pertenecientes a otros usuarios dentro del directorio compartido.
+Finalmente, Sticky Bit agregó una restricción de borrado y renombrado para los usuarios que no son propietarios del archivo ni del directorio y carecen de privilegios administrativos.
 
 El resultado fue un entorno donde varios usuarios pueden trabajar sobre un recurso común manteniendo controles específicos sobre acceso, propiedad y eliminación de archivos.

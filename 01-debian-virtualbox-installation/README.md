@@ -1,5 +1,11 @@
 # Lab 01 — Instalación de Debian GNU/Linux 13 en VirtualBox
 
+[← Índice de laboratorios](../README.md) · [Perfil de Adrián Galván](https://github.com/adrian-galvan)
+
+## Evidencia
+
+[Ver el PDF con las capturas paso a paso de la instalación](images/FotosPasoaPasoVmOracle.pdf).
+
 ## Objetivo
 
 Crear desde cero una máquina virtual destinada a mis laboratorios de administración GNU/Linux.
@@ -17,7 +23,10 @@ Se optó por una instalación sin entorno gráfico para trabajar principalmente 
 - Sistema invitado: Debian GNU/Linux 13 "Trixie"
 - Arquitectura: amd64
 - Instalador: netinst
-- Disco virtual: aproximadamente 43 GB
+- Memoria RAM: 12 288 MB (12 GiB)
+- CPU virtuales: 6
+- Firmware de la VM: EFI habilitado
+- Disco virtual: 40 GiB, aproximadamente 43 GB decimales
 - Gestión de almacenamiento: LVM
 - Sistema de archivos: ext4
 - Swap habilitada
@@ -29,15 +38,14 @@ Se optó por una instalación sin entorno gráfico para trabajar principalmente 
 
 Se descargaron las herramientas necesarias desde sus sitios oficiales:
 
-- Debian GNU/Linux:
-  https://www.debian.org/download
-
-- Oracle VirtualBox:
-  https://www.virtualbox.org/wiki/Downloads
+- [Descarga oficial de Debian GNU/Linux](https://www.debian.org/download).
+- [Descarga oficial de Oracle VirtualBox](https://www.virtualbox.org/wiki/Downloads).
 
 La imagen utilizada fue:
 
 `debian-13.6.0-amd64-netinst.iso`
+
+Este nombre corresponde a la imagen utilizada en la práctica y visible en el PDF; las versiones ofrecidas en la página de descargas pueden cambiar.
 
 ---
 
@@ -108,7 +116,7 @@ Se utilizó el método de particionado:
 
 **Guiado — utilizar todo el disco y configurar LVM**
 
-Se eligió un esquema con particiones separadas para:
+Dentro de LVM se crearon volúmenes lógicos separados para:
 
 - `/`
 - `/home`
@@ -144,6 +152,8 @@ El objetivo fue disponer de un sistema Debian mínimo orientado al trabajo desde
 
 Se mantuvieron las utilidades estándar del sistema.
 
+También se seleccionó **SSH server**, como muestra la captura de selección de programas. Esto dejó disponible OpenSSH Server para las prácticas posteriores de administración de servicios.
+
 ---
 
 ## 10. Resultado
@@ -152,7 +162,7 @@ La instalación finalizó correctamente.
 
 El sistema quedó disponible mediante terminal TTY y permite iniciar sesión tanto con el usuario normal como con `root`.
 
-Esta máquina virtual será utilizada como entorno base para los siguientes laboratorios de administración GNU/Linux.
+Esta máquina virtual constituye el entorno base de los siguientes laboratorios de administración GNU/Linux.
 
 ---
 
@@ -168,9 +178,9 @@ Para este laboratorio se eligió:
 
 ---
 
-## Próximos laboratorios
+## Continuidad de las prácticas
 
-Esta VM será utilizada para practicar:
+Esta VM se utiliza como base para practicar:
 
 - navegación por el sistema de archivos;
 - usuarios y grupos;
@@ -182,3 +192,5 @@ Esta VM será utilizada para practicar:
 - SSH;
 - pipes y redirecciones;
 - troubleshooting.
+
+Ya están publicados los laboratorios de [usuarios, grupos y permisos](../02-users-groups-permissions-acl-stickybit/README.md), [procesos, señales y servicios](../03-processes-signals-services/README.md) y [APT, repositorios y confianza](../04-apt-repositories-package-trust/README.md). Los demás temas se irán incorporando al [índice general](../README.md).
