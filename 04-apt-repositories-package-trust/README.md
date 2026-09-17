@@ -292,9 +292,6 @@ ls -l /etc/apt/trusted.gpg.d/
 ```
 
 Este directorio sí contenía distintos archivos de claves de Debian.
-
-![Keyrings de confianza global](images/06-global-trust-keyrings.png)
-
 Conceptualmente:
 
 ```text
@@ -325,6 +322,8 @@ La clave pública utilizada para verificar el repositorio fue descargada mediant
 ```bash
 wget -O /etc/apt/keyrings/google-chrome.asc https://dl.google.com/linux/linux_signing_key.pub
 ```
+
+![Keyrings de confianza global](images/06-global-trust-keyrings.png)
 
 La estructura general de este comando es:
 
