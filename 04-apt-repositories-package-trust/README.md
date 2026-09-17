@@ -411,7 +411,7 @@ apareciendo:
 google-chrome.asc
 ```
 
-![Descarga de la clave pública](images/07-key-download-and-verification.png)
+![Descarga de la clave pública](images/07-google-key-download.png)
 
 ---
 
@@ -492,8 +492,6 @@ descarga el índice de paquetes
 
 El error `Missing key` desapareció.
 
-![APT update exitoso con Signed-By](images/09-apt-update-success.png)
-
 Esto todavía no instala Google Chrome.
 
 Solamente permite que APT confíe en la metadata del repositorio y pueda incorporar su índice de paquetes.
@@ -557,18 +555,21 @@ Se ejecutó nuevamente:
 apt update
 ```
 
-APT consultó correctamente:
+APT consultó correctamente los repositorios oficiales de Debian y el repositorio de Google sin errores de firma.
+
+La misma captura permite comprobar:
 
 ```text
-Debian Trixie
-Debian Security
-Debian Trixie Updates
-Google Chrome stable
+debian.sources + google-chrome.sources
+        ↓
+configuración Deb822 de Google
+        ↓
+Signed-By configurado
+        ↓
+apt update exitoso
 ```
 
-sin errores de firma ni advertencias sobre extensiones inválidas.
-
-![Configuración final en Deb822](images/10-google-repository-deb822-final.png)
+![Configuración final en Deb822](images/09-google-repository-deb822-final.png)
 
 ---
 
@@ -733,7 +734,7 @@ El error `Missing key` mostró que alcanzar un repositorio no implica poder conf
 
 El error `404 Not Found` permitió distinguir una URL incorrecta de un problema de red.
 
-Finalmente, la configuración quedó completamente migrada al formato Deb822 y el repositorio externo de Google quedó asociado explícitamente a su clave pública mediante `Signed-By`.
+Finalmente, la configuración quedó migrada al formato Deb822 y el repositorio externo de Google quedó asociado explícitamente a su clave pública mediante `Signed-By`.
 
 ---
 
