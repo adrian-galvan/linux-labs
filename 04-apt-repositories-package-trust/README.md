@@ -409,9 +409,6 @@ apareciendo:
 ```text
 google-chrome.asc
 ```
-
-![Descarga de la clave pública](images/07-google-key-download.png)
-
 ---
 
 # 8. Asociar la clave al repositorio mediante Signed-By
@@ -441,9 +438,7 @@ Configuración modificada:
 ```text
 deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.asc] https://dl.google.com/linux/chrome/deb/ stable main
 ```
-
-![Configuración Signed-By](images/08-signed-by-configuration.png)
-
+![Descarga de la clave pública](images/07-google-key-download.png)
 Ahora la relación quedó explícita:
 
 ```text
@@ -470,6 +465,8 @@ apt update
 ```
 
 Esta vez APT pudo consultar correctamente el repositorio de Google.
+
+![Configuración Signed-By](images/08-signed-by-configuration.png)
 
 El flujo fue:
 
