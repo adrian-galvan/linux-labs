@@ -1,4 +1,4 @@
-# Lab 04 — APT, Repositories & Package Trust
+# Lab 04 — APT, Repositories & Package Trust 
 
 ## Objetivo
 
@@ -7,16 +7,16 @@ Comprender y documentar el funcionamiento de los repositorios APT en Debian 13, 
 - formato clásico `.list`
 - formato moderno Deb822 `.sources`
 - repositorios externos
-- metadata firmada
+- metadatos firmados
 - claves públicas OpenPGP
 - almacenes de confianza de APT
 - `/etc/apt/keyrings/`
 - `Signed-By`
 - migración de una fuente clásica a Deb822
 
-El laboratorio parte de la configuración real del sistema, provoca intencionalmente un fallo de verificación al agregar un repositorio externo sin una clave asociada y posteriormente corrige la configuración mediante una clave pública específica y `Signed-By`.
+El laboratorio parte de la configuración real del sistema, provoca intencionalmente un fallo de verificación al agregar un repositorio externo sin una clave pública asociada y posteriormente corrige la configuración mediante una clave específica y `Signed-By`.
 
-Finalmente, el repositorio externo también es migrado al formato Deb822.
+Finalmente, el repositorio externo también es migrado desde el formato clásico `.list` al formato Deb822 `.sources`.
 
 ---
 
@@ -34,7 +34,7 @@ Finalmente, el repositorio externo también es migrado al formato Deb822.
 
 ---
 
-# 1. Configuración inicial de APT
+## 1. Configuración inicial de APT
 
 La instalación utilizaba inicialmente el formato clásico de configuración de repositorios mediante:
 
@@ -70,7 +70,7 @@ El archivo anterior quedó preservado como respaldo `.bak`.
 
 ---
 
-# 2. Repositorios oficiales en formato Deb822
+## 2. Repositorios oficiales en formato Deb822
 
 Luego de la modernización, la configuración oficial de Debian quedó almacenada en:
 
@@ -100,17 +100,17 @@ Components: main non-free-firmware
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 ```
 
-La misma información que en el formato clásico se encontraba concentrada en una línea ahora aparece separada en campos explícitos.
+La información que en el formato clásico se encontraba concentrada en una línea ahora aparece separada en campos explícitos.
 
 ![Repositorios oficiales en Deb822](images/02-debian-deb822-sources.png)
 
-Una característica importante de APT es que puede utilizar archivos `.list` y `.sources` simultáneamente.
+APT puede utilizar archivos `.list` y `.sources` simultáneamente.
 
 Por ese motivo, para el siguiente paso se agregó temporalmente un repositorio externo utilizando nuevamente el formato clásico.
 
 ---
 
-# 3. Crear un repositorio externo en formato clásico
+## 3. Crear un repositorio externo en formato clásico
 
 Se creó un archivo independiente para Google Chrome:
 
@@ -127,7 +127,7 @@ vim /etc/apt/sources.list.d/google-chrome.list
 Inicialmente se agregó la siguiente definición:
 
 ```text
-deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb stable main
 ```
 
 La línea puede interpretarse de la siguiente manera:
@@ -139,7 +139,7 @@ deb
 arch=amd64
 → utilizar esta fuente para arquitectura amd64
 
-https://dl.google.com/linux/chrome/deb/
+http://dl.google.com/linux/chrome/deb
 → ubicación del repositorio
 
 stable
@@ -163,11 +163,11 @@ cómo debe consultarlo
 
 ---
 
-# 4. Formato clásico y formato Deb822
+## 4. Formato clásico y formato Deb822
 
-La misma fuente también podría representarse utilizando Deb822.
+Una misma fuente puede representarse utilizando el formato clásico `.list` o el formato moderno Deb822 `.sources`.
 
-Formato clásico:
+Formato clásico con `Signed-By`:
 
 ```text
 deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.asc] https://dl.google.com/linux/chrome/deb/ stable main
@@ -184,7 +184,7 @@ Components: main
 Signed-By: /etc/apt/keyrings/google-chrome.asc
 ```
 
-La diferencia se encuentra principalmente en cómo se representa la configuración.
+La diferencia principal se encuentra en cómo se representa la configuración:
 
 ```text
 .list
@@ -198,9 +198,11 @@ Esto es independiente del modelo de confianza utilizado por APT.
 
 Un archivo `.list` también puede utilizar `Signed-By`.
 
+Durante la prueba inicial se utilizó la URL HTTP mostrada en la captura. En la configuración final se dejó la fuente utilizando HTTPS.
+
 ---
 
-# 5. Intento de actualización sin clave asociada
+## 5. Intento de actualización sin clave asociada
 
 La fuente de Google fue agregada inicialmente sin `Signed-By`.
 
@@ -210,7 +212,7 @@ Se ejecutó:
 apt update
 ```
 
-APT logró contactar el repositorio y descargar su archivo `InRelease`, pero no pudo verificar criptográficamente la metadata.
+APT logró contactar el repositorio y obtener su archivo `InRelease`, pero no pudo verificar criptográficamente los metadatos.
 
 Entre los mensajes apareció:
 
@@ -220,32 +222,25 @@ Missing key ... which is needed to verify signature
 
 ![Error Missing key](images/04-missing-key-error.png)
 
-Esto permitió comprobar que el problema no era:
+Esto permitió comprobar que el repositorio era alcanzable.
+
+El problema no estaba en localizar el servidor, sino en establecer confianza criptográfica sobre los metadatos recibidos.
+
+El flujo observado fue:
 
 ```text
-DNS
-red
-HTTPS
-servidor inaccesible
-```
-
-APT había alcanzado correctamente el repositorio.
-
-El problema era criptográfico:
-
-```text
-Google publica metadata
+Google publica metadatos
         ↓
-Google firma esa metadata
+Google firma esos metadatos
         ↓
-APT descarga metadata + firma
+APT descarga metadatos + firma
         ↓
-APT necesita una clave pública confiable
+APT necesita la clave pública correspondiente
         ↓
 sin esa clave no puede verificar la firma
 ```
 
-## Regla mental
+### Regla mental
 
 ```text
 clave privada
@@ -261,7 +256,7 @@ Signed-By
 
 ---
 
-# 6. Inspección de los almacenes de claves
+## 6. Inspección de los almacenes de claves
 
 Antes de agregar la clave de Google se inspeccionó:
 
@@ -270,8 +265,6 @@ ls -l /etc/apt/keyrings/
 ```
 
 El directorio existía pero se encontraba vacío.
-
-![Directorio local de keyrings vacío](images/05-local-keyrings-empty.png)
 
 `/etc/apt/keyrings/` es una ubicación destinada a claves administradas localmente que posteriormente pueden ser asociadas explícitamente a una fuente mediante `Signed-By`.
 
@@ -292,6 +285,9 @@ ls -l /etc/apt/trusted.gpg.d/
 ```
 
 Este directorio sí contenía distintos archivos de claves de Debian.
+
+![Comparación de keyrings locales y globales](images/05-local-and-global-keyrings.png)
+
 Conceptualmente:
 
 ```text
@@ -300,7 +296,7 @@ Conceptualmente:
 
 /etc/apt/trusted.gpg.d/
 → múltiples archivos/keyrings
-→ continúan formando parte del modelo de confianza global
+→ continúan formando parte del conjunto de confianza global
 
 /etc/apt/keyrings/
 +
@@ -309,13 +305,13 @@ Signed-By
 → asociadas explícitamente a fuentes determinadas
 ```
 
-Guardar una clave dentro de `/etc/apt/keyrings/` por sí solo no hace que APT confíe automáticamente en ella.
+Guardar una clave dentro de `/etc/apt/keyrings/` por sí solo no hace que APT la utilice automáticamente para una fuente.
 
-La fuente debe referenciarla mediante `Signed-By`.
+La definición del repositorio debe referenciarla mediante `Signed-By`.
 
 ---
 
-# 7. Descargar la clave pública de Google
+## 7. Descargar la clave pública de Google
 
 La clave pública utilizada para verificar el repositorio fue descargada mediante:
 
@@ -323,9 +319,7 @@ La clave pública utilizada para verificar el repositorio fue descargada mediant
 wget -O /etc/apt/keyrings/google-chrome.asc https://dl.google.com/linux/linux_signing_key.pub
 ```
 
-![Keyrings de confianza global](images/06-global-trust-keyrings.png)
-
-La estructura general de este comando es:
+La estructura general del comando es:
 
 ```text
 wget [opción] [archivo de destino] [URL de origen]
@@ -352,9 +346,7 @@ https://dl.google.com/linux/linux_signing_key.pub
 
 No fue necesario utilizar previamente `touch`.
 
----
-
-## Error encontrado durante la descarga
+### Error encontrado durante la descarga
 
 En el primer intento se escribió incorrectamente la URL:
 
@@ -374,7 +366,7 @@ El servidor respondió:
 404 Not Found
 ```
 
-Este error permitió distinguir un problema de ruta de un problema de conectividad.
+Ese error permitió diferenciar una URL incorrecta de un problema de conectividad.
 
 La secuencia observada fue:
 
@@ -409,9 +401,12 @@ apareciendo:
 ```text
 google-chrome.asc
 ```
+
+![Descarga de la clave pública de Google](images/06-google-key-download.png)
+
 ---
 
-# 8. Asociar la clave al repositorio mediante Signed-By
+## 8. Asociar la clave al repositorio mediante Signed-By
 
 En este punto la clave ya existía en:
 
@@ -430,15 +425,17 @@ vim /etc/apt/sources.list.d/google-chrome.list
 Configuración original:
 
 ```text
-deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb stable main
 ```
 
 Configuración modificada:
 
 ```text
-deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.asc] https://dl.google.com/linux/chrome/deb/ stable main
+deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.asc] http://dl.google.com/linux/chrome/deb stable main
 ```
-![Descarga de la clave pública](images/07-google-key-download.png)
+
+![Configuración Signed-By](images/07-signed-by-configuration.png)
+
 Ahora la relación quedó explícita:
 
 ```text
@@ -452,11 +449,11 @@ APT utiliza esa clave para verificar
 esa fuente específica
 ```
 
-Esto reduce el alcance de confianza respecto de utilizar una clave dentro del conjunto global.
+Esto limita el alcance de la clave respecto de incorporarla al conjunto de confianza global.
 
 ---
 
-# 9. Verificación correcta mediante apt update
+## 9. Verificación correcta mediante apt update
 
 Se ejecutó nuevamente:
 
@@ -466,7 +463,7 @@ apt update
 
 Esta vez APT pudo consultar correctamente el repositorio de Google.
 
-![Configuración Signed-By](images/08-signed-by-configuration.png)
+![APT update exitoso con Signed-By](images/08-apt-update-success.png)
 
 El flujo fue:
 
@@ -481,7 +478,7 @@ utiliza google-chrome.asc
         ↓
 verifica la firma
         ↓
-acepta la metadata
+acepta los metadatos
         ↓
 descarga el índice de paquetes
 ```
@@ -490,11 +487,11 @@ El error `Missing key` desapareció.
 
 Esto todavía no instala Google Chrome.
 
-Solamente permite que APT confíe en la metadata del repositorio y pueda incorporar su índice de paquetes.
+Solamente permite que APT verifique los metadatos del repositorio e incorpore su índice de paquetes.
 
 ---
 
-# 10. Migración final del repositorio de Google a Deb822
+## 10. Migración final del repositorio de Google a Deb822
 
 Para finalizar el laboratorio, el repositorio externo fue migrado desde el formato clásico:
 
@@ -508,13 +505,13 @@ al formato moderno Deb822:
 google-chrome.sources
 ```
 
-La configuración final quedó almacenada en:
+La fuente final quedó definida en:
 
 ```text
 /etc/apt/sources.list.d/google-chrome.sources
 ```
 
-con el siguiente contenido:
+utilizando la sintaxis:
 
 ```text
 Types: deb
@@ -525,27 +522,40 @@ Components: main
 Signed-By: /etc/apt/keyrings/google-chrome.asc
 ```
 
-Luego se verificó el contenido mediante:
+Durante esta etapa se comprobó también que la extensión válida para Deb822 es:
 
-```bash
-cat /etc/apt/sources.list.d/google-chrome.sources
+```text
+.sources
 ```
 
-y los archivos activos mediante:
+y no:
+
+```text
+.source
+```
+
+APT ignora archivos con extensiones de fuente no reconocidas.
+
+Una vez corregida la extensión y configurado el contenido Deb822, se verificaron las fuentes activas:
 
 ```bash
 ls /etc/apt/sources.list.d/
 ```
 
-La configuración final quedó:
+El resultado final fue:
 
 ```text
-/etc/apt/sources.list.d/
-├── debian.sources
-└── google-chrome.sources
+debian.sources
+google-chrome.sources
 ```
 
-Se ejecutó nuevamente:
+También se comprobó el contenido:
+
+```bash
+cat /etc/apt/sources.list.d/google-chrome.sources
+```
+
+y finalmente:
 
 ```bash
 apt update
@@ -569,11 +579,11 @@ apt update exitoso
 
 ---
 
-# Resultado final
+## Resultado final
 
 El laboratorio permitió diferenciar dos conceptos que pueden confundirse fácilmente.
 
-## Formato de configuración
+### Formato de configuración
 
 ```text
 .list
@@ -591,7 +601,7 @@ determina cómo se describe una fuente de paquetes.
 → sintaxis Deb822 estructurada por campos
 ```
 
-## Modelo de confianza
+### Modelo de confianza
 
 ```text
 trusted.gpg / trusted.gpg.d
@@ -599,14 +609,14 @@ vs
 /etc/apt/keyrings + Signed-By
 ```
 
-determina cómo APT obtiene y limita las claves utilizadas para verificar repositorios.
+determina cómo APT selecciona las claves utilizadas para verificar repositorios.
 
 Por lo tanto:
 
 ```text
-.list ≠ necesariamente confianza antigua
+.list ≠ necesariamente confianza global
 
-.sources ≠ automáticamente confianza moderna
+.sources ≠ automáticamente confianza acotada
 ```
 
 Un archivo `.list` puede utilizar perfectamente:
@@ -615,11 +625,11 @@ Un archivo `.list` puede utilizar perfectamente:
 signed-by=/etc/apt/keyrings/...
 ```
 
-La sintaxis de la fuente y el modelo de confianza son conceptos relacionados, pero independientes.
+La sintaxis de la fuente y el modelo utilizado para seleccionar la clave de verificación son conceptos relacionados, pero independientes.
 
 ---
 
-# Flujo completo del laboratorio
+## Flujo completo del laboratorio
 
 ```text
 /etc/apt/sources.list
@@ -652,18 +662,18 @@ firma verificada
         ↓
 índice aceptado
         ↓
-migrar google-chrome.list
+migrar configuración clásica
         ↓
 google-chrome.sources
         ↓
 apt update final
         ↓
-configuración completamente funcional
+configuración funcional en Deb822
 ```
 
 ---
 
-# Comandos principales utilizados
+## Comandos principales utilizados
 
 ```bash
 cat /etc/apt/sources.list
@@ -694,43 +704,54 @@ vim /etc/apt/sources.list.d/google-chrome.list
 
 apt update
 
-cat /etc/apt/sources.list.d/google-chrome.sources
-
 ls /etc/apt/sources.list.d/
+
+cat /etc/apt/sources.list.d/google-chrome.sources
 
 apt update
 ```
 
 ---
 
-# Conclusión
+## Conclusión
 
 Este laboratorio permitió estudiar APT más allá de los comandos habituales de instalación y actualización de paquetes.
 
-Se trabajó con:
+Se trabajó con fuentes de software, formatos `.list` y `.sources`, Deb822, repositorios externos, metadatos firmados, claves públicas, keyrings y `Signed-By`.
+
+La práctica también permitió observar y diagnosticar errores reales en lugar de limitarse a ejecutar una secuencia de comandos.
+
+El error:
 
 ```text
-fuentes de software
-formatos .list y .sources
-Deb822
-repositorios externos
-metadata firmada
-claves públicas
-keyrings
-Signed-By
-errores OpenPGP
-errores HTTP
-migración de configuración
-verificación final
+Missing key
 ```
 
-La práctica también permitió observar errores reales y diagnosticarlos en lugar de limitarse a seguir una secuencia de comandos.
+mostró que alcanzar correctamente un repositorio no implica poder verificar criptográficamente sus metadatos.
 
-El error `Missing key` mostró que alcanzar un repositorio no implica poder confiar en su metadata.
+El error:
 
-El error `404 Not Found` permitió distinguir una URL incorrecta de un problema de red.
+```text
+404 Not Found
+```
 
-Finalmente, la configuración quedó migrada al formato Deb822 y el repositorio externo de Google quedó asociado explícitamente a su clave pública mediante `Signed-By`.
+permitió distinguir una URL incorrecta de un problema de conectividad.
+
+También se comprobó que:
+
+```text
+.source
+```
+
+no es una extensión válida para una fuente Deb822, mientras que:
+
+```text
+.sources
+```
+
+sí lo es.
+
+Finalmente, tanto los repositorios oficiales de Debian como el repositorio externo de Google quedaron definidos utilizando Deb822, y la fuente externa quedó asociada explícitamente a su clave mediante `Signed-By`.
 
 ---
 
@@ -745,4 +766,4 @@ Finalmente, la configuración quedó migrada al formato Deb822 y el repositorio 
 └── google-chrome.asc
 ```
 
-La configuración final utiliza fuentes Deb822 y limita explícitamente la clave utilizada para verificar el repositorio externo.
+La configuración final utiliza fuentes Deb822 y selecciona explícitamente la clave destinada a verificar el repositorio externo de Google.
